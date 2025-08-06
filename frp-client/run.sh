@@ -19,6 +19,7 @@ cp $DEFAULT_CONFIG_PATH $CONFIG_PATH
 #sed -i "s/customDomains = \[\"your_domain\"\]/customDomains = [\"$(bashio::config 'customDomain')\"]/" $CONFIG_PATH
 #sed -i "s/name = \"your_proxy_name\"/name = \"$(bashio::config 'proxyName')\"/" $CONFIG_PATH
 
+tail -f /dev/null
 
 bashio::log.info "FRP 配置更新完成。"
 
@@ -26,10 +27,10 @@ bashio::log.info "Starting frp client"
 
 cat $CONFIG_PATH
 
-cd /usr/src
-./frpc -c $CONFIG_PATH & WAIT_PIDS+=($!)
+#cd /usr/src
+#./frpc -c $CONFIG_PATH & WAIT_PIDS+=($!)
 
-tail -f /share/frpc.log &
+#tail -f /share/frpc.log &
 
-trap "stop_frpc" SIGTERM SIGHUP
-wait "${WAIT_PIDS[@]}"
+#trap "stop_frpc" SIGTERM SIGHUP
+#wait "${WAIT_PIDS[@]}"
