@@ -82,10 +82,8 @@ fi
 # 重启 Home Assistant（如果需要）
 # ---------------------------
 if [ "$NEED_RESTART" = true ]; then
-    bashio::log.info "配置已更新，正在重启 Home Assistant..."
-    curl -s -X POST \
-      -H "Authorization: Bearer ${HASSIO_TOKEN}" \
-      http://supervisor/services/homeassistant/restart
+    bashio::log.info "配置已更新，正在重启 Home Assistant Core..."
+    bashio::core.restart
 else
     bashio::log.info "配置未更改，无需重启。"
 fi
