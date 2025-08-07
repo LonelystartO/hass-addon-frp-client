@@ -1,8 +1,8 @@
 #!/usr/bin/with-contenv bashio
 set -e
 
-DEFAULT_CONFIG_PATH="/data/default_frp.ini"
-CONFIG_PATH="/data/frp.ini"
+CONFIG_PATH="/share/frpc.toml"
+DEFAULT_CONFIG_PATH="/frpc.toml"
 OPTIONS_FILE="/data/options.json"
 CONFIG_FILE="/homeassistant/configuration.yaml"  # 你挂载的路径
 
