@@ -1,4 +1,4 @@
-#!/usr/bin/env bashio
+#!/usr/bin/with-contenv bashio
 WAIT_PIDS=()
 CONFIG_PATH='/share/frpc.toml'
 DEFAULT_CONFIG_PATH='/frpc.toml'
