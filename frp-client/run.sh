@@ -4,7 +4,9 @@ set -e
 CONFIG_PATH="/share/frpc.toml"
 DEFAULT_CONFIG_PATH="/frpc.toml"
 OPTIONS_FILE="/data/options.json"
-CONFIG_FILE="/homeassistant/configuration.yaml"  # 你挂载的路径
+CONFIG_FILE="/homeassistant/configuration.yaml"
+LOG_PATH="/share/frpc.log"
+WAIT_PIDS=()
 
 # ---------------------------
 # 等待 options.json 准备好
@@ -17,9 +19,6 @@ for i in $(seq 1 10); do
     fi
     sleep 1
 done
-
-# 可选：输出 yq 版本，验证 yq 可用
-bashio::log.info "yq 版本: $(yq --version)"
 
 # ---------------------------
 # 读取用户配置
@@ -51,14 +50,12 @@ if ! yq e '.http' "$CONFIG_FILE" | grep -q '.'; then
     ' "$CONFIG_FILE"
     NEED_RESTART=true
 else
-    # use_x_forwarded_for
     if ! yq e '.http.use_x_forwarded_for' "$CONFIG_FILE" | grep -q true; then
         bashio::log.info "添加 use_x_forwarded_for: true"
         yq -i '.http.use_x_forwarded_for = true' "$CONFIG_FILE"
         NEED_RESTART=true
     fi
 
-    # trusted_proxies
     if ! yq e '.http.trusted_proxies' "$CONFIG_FILE" | grep -q '.'; then
         bashio::log.info "添加 trusted_proxies 列表"
         yq -i '.http.trusted_proxies = ["127.0.0.1", "::1"]' "$CONFIG_FILE"
@@ -94,7 +91,28 @@ else
 fi
 
 # ---------------------------
-# 保持容器运行，不启动 frpc
+# 启动 frpc 客户端
 # ---------------------------
-bashio::log.info "初始化完成，保持容器运行（未启动 frpc）..."
-tail -f /dev/null
+bashio::log.info "启动 frpc 客户端..."
+cd /usr/src
+./frpc -c "$CONFIG_PATH" >> "$LOG_PATH" 2>&1 & WAIT_PIDS+=($!)
+
+# ---------------------------
+# 启动日志同步
+# ---------------------------
+touch "$LOG_PATH"
+tail -f "$LOG_PATH" & WAIT_PIDS+=($!)
+
+# ---------------------------
+# 优雅退出
+# ---------------------------
+stop_frpc() {
+    bashio::log.info "接收到退出信号，停止 frpc..."
+    kill -15 "${WAIT_PIDS[@]}"
+}
+trap "stop_frpc" SIGTERM SIGHUP
+
+# ---------------------------
+# 主线程等待
+# ---------------------------
+wait "${WAIT_PIDS[@]}"
