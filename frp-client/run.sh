@@ -10,8 +10,12 @@ function stop_frpc() {
 
 bashio::log.info "Copying configuration."
 cp $DEFAULT_CONFIG_PATH $CONFIG_PATH
+ADDR=$(bashio::config "serverAddr")
+bashio::log.info "$ADDR"
+
 sed -i "s/serverAddr = \"your_server_addr\"/serverAddr = \"$(bashio::config \"serverAddr\")\"/" $CONFIG_PATH
 bashio::log.info "Copying serverAddr done."
+
 sed -i "s/serverPort = 7000/serverPort = $(bashio::config 'serverPort')/" $CONFIG_PATH
 sed -i "s/auth.token = \"123456789\"/auth.token = \"$(bashio::config 'authToken')\"/" $CONFIG_PATH
 #sed -i "s/webServer.port = 7500/webServer.port = $(bashio::config 'webServerPort')/" $CONFIG_PATH
