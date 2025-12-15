@@ -12,7 +12,7 @@ RUN apk add --no-cache curl && \
       "armv7")    YQ_ARCH="arm";; \
       *)          echo "Unsupported architecture: $BUILD_ARCH" && exit 1;; \
     esac && \
-    curl -L "https://ghfast.top/github.com/mikefarah/yq/releases/latest/download/yq_linux_${YQ_ARCH}" -o /usr/bin/yq && \
+    curl -L "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${YQ_ARCH}" -o /usr/bin/yq && \
     chmod +x /usr/bin/yq && \
     yq --version
 

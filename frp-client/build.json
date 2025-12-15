@@ -1,8 +1,10 @@
 {
     "build_from": {
-      "armv7": "homeassistant/armv7-base:3.18"
+      "aarch64": "home-assistant/aarch64-base:3.18",
+      "amd64": "home-assistant/amd64-base:3.18",
+      "armv7": "home-assistant/armv7-base:3.18"
     },
     "args": {
-        "FRP_VERSION": "0.53.0"
+        "FRP_VERSION": "0.61.1"
     }
 }
